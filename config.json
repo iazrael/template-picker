@@ -1,0 +1,7 @@
+{
+	"source": "index.html",
+	"target": "./out/",
+	"template": "test.js",
+	"tmplFuncPlaceholder": "/*%HtmlTemplateFunctions%*/",
+	"compressWhitespace": true
+}
