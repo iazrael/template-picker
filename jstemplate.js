@@ -12,7 +12,6 @@
 })('jstemplate', function () {
 
     var context = this,
-        global = typeof window != 'undefined' ? window : {},
         _cache = {},
         vars = 'var ',
         varsInTpl,
@@ -50,7 +49,7 @@
         }
     
         var code = vars + codeArr[0] + tmpCode + 'return ' + codeArr[3];
-        var fn = new Function('$data', '$getValue', code);
+        var fn = new Function('$data', code);
         
         return fn;
     }
@@ -84,14 +83,10 @@
                 continue;
             }
             if (!varsInTpl[c]) {
-                vars += (c + '= $getValue("' + c + '", $data),');
+                vars += (c + '= $data.' + c + ',');
                 varsInTpl[c] = 1;
             }
         }
-    }
-    
-    function getValue (v, $data){
-        return $data.hasOwnProperty(v) ? $data[v] : global[v];
     }
 
     function jstemplate (id, source, data) {
@@ -100,7 +95,7 @@
             source = id;
             id = null;
         }
-        return (id && _cache[id]) ? _cache[id](data, getValue) : jstemplate.compile(id, source, data);
+        return (id && _cache[id]) ? _cache[id](data) : jstemplate.compile(id, source, data);
     }
     
     jstemplate.compile = function (id, source, data) {
@@ -116,7 +111,7 @@
         }
         //console.log(compileFn)
         if(arguments.length === 3){
-            return compileFn(data, getValue);
+            return compileFn(data);
         }else{
             return compileFn;
         }

@@ -1,0 +1,7 @@
+{
+	"source": "index.html",
+	"target": "./out/",
+	"templateOutput": "output.js",
+	"templatePlaceholder": "/*%HtmlTemplateFunctions%*/",
+	"compressWhitespace": true
+}

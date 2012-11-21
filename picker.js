@@ -9,8 +9,8 @@ var jstemplate = require('./jstemplate.js'),
 var DEFAULT_CONFIG = {
 	source: null,
 	target: './',
-	template: null,
-	tmplFuncPlaceholder: '/*%HtmlTemplateFunctions%*/',
+	templateOutput: null,
+	templatePlaceholder: '/*%HtmlTemplateFunctions%*/',
 	compressWhitespace: false
 }
 
@@ -34,7 +34,12 @@ var readConfig = function(config){
 var pickup = function(tid, tmpl){
 	tmpl = tmpl.replace(/\n|\r/g, '');
 	var func = jstemplate.compile(tmpl);
-	func = 'this.' + tid + '=' + func.toString();
+	func = func.toString();
+	var prefix = 'function anonymous';
+	if(func.indexOf(prefix) == 0) {
+		func = func.replace(prefix, 'function');
+	}
+	func = 'this.' + tid + '=' + func;
 	result.push(func);
 }
 
@@ -61,10 +66,10 @@ var exec = function(configFile){
 	if(config.compressWhitespace){
 		content = content.replace(/[\t ]+/g, ' ');
 	}
-	var tmpl = fs.readFileSync(config.template).toString();
-	tmpl = tmpl.replace(config.tmplFuncPlaceholder, content);
-	fileName = path.join(config.target, path.basename(config.template));
-	nf.writeFileSync(fileName, content);
+	var tmpl = fs.readFileSync(config.templateOutput).toString();
+	tmpl = tmpl.replace(config.templatePlaceholder, content);
+	fileName = path.join(config.target, path.basename(config.templateOutput));
+	nf.writeFileSync(fileName, tmpl);
 }
 
 if(process.argv.length < 2){
