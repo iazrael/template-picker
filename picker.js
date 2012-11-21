@@ -31,7 +31,7 @@ var readConfig = function(config){
     return config;
 }
 
-var pickup = function(tid, tmpl){
+var pickup = function(match, tid, tmpl){
 	tmpl = tmpl.replace(/\n|\r/g, '');
 	var func = jstemplate.compile(tmpl);
 	func = func.toString();
@@ -41,6 +41,7 @@ var pickup = function(tid, tmpl){
 	}
 	func = 'this.' + tid + '=' + func;
 	result.push(func);
+	return '';
 }
 
 var exec = function(configFile){
@@ -51,12 +52,8 @@ var exec = function(configFile){
 	for(var i = 0; i < config.source.length; i++) {
 		fileName = config.source[i];
 		content = fs.readFileSync(fileName).toString();
-		content = content.replace(tmplRegexp, function(m, $1, $2){
-			return pickup($1, $2) || '';
-		});
-		content = content.replace(tmplRegexp2, function(m, $1, $2){
-			return pickup($2, $1) || '';
-		});
+		content = content.replace(tmplRegexp, pickup);
+		content = content.replace(tmplRegexp2, pickup);
 
 		fileName = path.join(config.target, path.basename(fileName));
 		console.log(fileName);
