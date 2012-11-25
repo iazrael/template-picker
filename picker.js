@@ -56,7 +56,7 @@ var exec = function(configFile){
 		content = content.replace(tmplRegexp2, pickup);
 
 		fileName = path.join(config.target, path.basename(fileName));
-		console.log(fileName);
+		console.log('output', fileName);
 		nf.writeFileSync(fileName, content);
 	}
 	content = result.join('\n');
@@ -65,14 +65,22 @@ var exec = function(configFile){
 	}
 	var tmpl = fs.readFileSync(config.templateOutput).toString();
 	tmpl = tmpl.replace(config.templatePlaceholder, content);
-	fileName = path.join(config.target, path.basename(config.templateOutput));
+	fileName = path.join(config.target, config.templateOutput);
+	console.log('output', fileName);
 	nf.writeFileSync(fileName, tmpl);
 }
 
-if(process.argv.length < 2){
-	//非命令行启动，而是 js 的require
-	exports.exec = exec;
-}else{
+exports.exec = exec;
+
+var isInCommandLine = function(){
+	var filename = process.argv[1];
+	if(filename && path.basename(filename) === path.basename(__filename)){
+		return true;
+	}
+	return false;
+}
+
+if(isInCommandLine()){
 	exec(process.argv[2]);
 }
 
